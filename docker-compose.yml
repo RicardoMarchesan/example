@@ -1,0 +1,60 @@
+version: "3.7"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./:/var/www
+    depends_on:
+      - redis
+      - db
+      - pgadmin
+
+  nginx:
+    image: nginx:alpine3.19
+    restart: unless-stopped
+    ports:
+      - "8001:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/:/etc/nginx/conf.d/
+    depends_on:
+      - app
+
+  db:
+    image: postgres:latest
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USERNAME:-admin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-admin}
+      PGDATA: /data/postgres
+    volumes:
+      - ./.docker/postgres:/data/postgres
+    ports:
+      - "5432:5432"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: sistemas@kronosfortress.seg.br
+      PGADMIN_DEFAULT_PASSWORD: ${DB_PASSWORD:-admin}
+    volumes:
+      - ./.docker/pgadmin:/var/lib/pgadmin
+    ports:
+      - "8101:80"
+    depends_on:
+      - db
+
+  redis:
+    image: redis:7-alpine3.20
+
+
+networks:
+  default:
+    name: construapp
+    external: true
