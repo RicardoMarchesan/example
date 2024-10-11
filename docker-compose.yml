@@ -56,5 +56,5 @@ services:
 
 networks:
   default:
-    name: construapp
+    name: example
     external: true
