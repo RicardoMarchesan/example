@@ -41,7 +41,7 @@ services:
     image: dpage/pgadmin4
     restart: unless-stopped
     environment:
-      PGADMIN_DEFAULT_EMAIL: sistemas@kronosfortress.seg.br
+      PGADMIN_DEFAULT_EMAIL: example@test.com
       PGADMIN_DEFAULT_PASSWORD: ${DB_PASSWORD:-admin}
     volumes:
       - ./.docker/pgadmin:/var/lib/pgadmin
